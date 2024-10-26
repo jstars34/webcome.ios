@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const an9s = document.createElement("audio");
     an9s.id = 'suv';
     an89.spellcheck = true;
-    an9s.src = '/chatGpt/gs.ogg'
+    an9s.src = 'gs.ogg';
     addHtml(container, an9s);
     const MEssageForall = document.createElement("div-mesage");
     MEssageForall.classList.add("message-copy");
