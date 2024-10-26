@@ -19,13 +19,14 @@ const UserDisplayInformation = {
         IsContactSelected: false,
     },
     PageSystem: {
-        CHANGE: { ISEDITING: false, THEVALUE: '' },
+        CHANGE: { ISEDITING: false, THEVALUE: '',Forward:{VALUE:'', FORWARDING:false},Replay:{VALUE:'', REPLAYING:false} },
         DEleteWithPermisioin: (ReverseSession.PSystem.DEL_PER ? true : false),
         IsSelcting: false,
         Components: { Microphon: true },
         SYT: { AutoBack: (ReverseSession.PSystem.SYT.AB ? true : false) }
     }
 }
+
 const ACCTEXTES = localStorage.getItem("ACCTEXTES")
 const Account_textes = JSON.parse(ACCTEXTES) || {};
 console.log(Account_textes)
