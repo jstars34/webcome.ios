@@ -3,12 +3,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const ftr = JSON.parse(ftr1)
     const ntf99IMG = sessionStorage.getItem("thisImg");
     if (!ftr) {
-        document.location.href = 'doc.html';
+        try {
+            document.location.href = 'doc.html';
         return;
+        } catch (error) {
+            console.log('some thing bad happen',error)
+        }
     }
     const ntf99 = ftr.split('|~|');
     if (UserDisplayInformation.PageStyle.GreenBLue) { 
-        document.getElementById("PageNature").href = './style/n.css';
+        try {
+            document.getElementById("PageNature").href = 'n.css';
+        } catch (error) {
+            console.log("Cant change Page color",error)
+        }
     }
     let IsHeInArchive = false;
     const INFODISPLAY = {
@@ -27,7 +35,38 @@ document.addEventListener('DOMContentLoaded', () => {
     function DLE_Buttons() {
         const GET_DELETE_Button = document.querySelectorAll('#FM_DELETE');
         const GET_EDIT_Button = document.querySelectorAll('#FM_EDIT');
+        const GET_COPY_Button = document.querySelectorAll('#FM_COPY');
+        const GET_REPLAY_Button = document.querySelectorAll('#FM_REPLAY');
+        const GET_FORWARD_Button = document.querySelectorAll('#FM_FORWARD');
         const dis = document.getElementById("UserAreaMessageControl");
+        const GETControlshow = document.querySelectorAll("#SHown99");
+        GETControlshow.forEach(Conp => {
+            Conp.addEventListener("click", function () {
+                console.log('clickse')
+           try {
+            const getid = Conp.getAttribute("FWO").trim();
+            const getmainID = document.getElementById(`@~${getid}~@`);
+            getmainID.classList.add("dis");
+               getmainID.style.display = 'grid';
+               const msd = document.getElementById('MessDisplay'); //messageDisplay
+               msd.style.overflow = 'hidden';
+          const ni99Div =   document.getElementById('ni99Div');
+          document.addEventListener('click', (event) => {
+            if (!getmainID.contains(event.target) && event.target !== Conp) {
+                getmainID.style.display = 'none';
+                msd.style.overflow = '';
+            }
+        });
+            getmainID.addEventListener("click", function () {
+                getmainID.style.display = 'none';
+                messageDisplay.style.overflow = '';
+            })
+           } catch (error) {
+               document.location.reload();
+           }
+            })
+
+        })
         GET_EDIT_Button.forEach(EDT => {
             EDT.addEventListener("click", function (e) {
                 const NST = EDT.getAttribute("JSK");
@@ -72,16 +111,85 @@ document.addEventListener('DOMContentLoaded', () => {
                     RHtml(dis,divEDTDIs)
                     messageInput.value = '';
                     return;
-                
                 })
             })
         });
+        GET_COPY_Button.forEach(COP => {
+            COP.addEventListener("click", function () {
+                MEssageForall.style.display = 'block';
+                
+                const JSW = COP.getAttribute("CONT").trim();
+                const SWT2 = Conversations[ CuruntClick ][ `M${JSW}` ].VALUE;
+                navigator.clipboard.writeText(SWT2).then(() => {
+                    ActionDisplay.innerHTML = '';
+                    const tc = document.createElement("ftc-t");
+                    const checklength = (SWT2.length > 50 ? `${SWT2.slice(0,20)}...` : SWT2);
+                    tc.textContent = `"${checklength}"`;
+                    tc.classList.add("Copied-Text");
+                    ActionDisplay.textContent = 'Copied';
+                    addHtml(ActionDisplay,tc)
+                    setTimeout(() => {
+                        MEssageForall.style.display = 'none';
+                    }, 800);
+                })
+                .catch(err =>{
+                    ActionDisplay.textContent = `Can't Copy the text` 
+                })
+            })
+            GET_REPLAY_Button.forEach(replay => {
+                replay.addEventListener("click", function () {
+                    if (UserDisplayInformation.PageSystem.CHANGE.Replay.REPLAYING == true) return;
+                     const NST = replay.getAttribute("JSK");
+                const DDS = replay.getAttribute("CONT").trim();
+                const Ntext = document.getElementById(NST);
+                const NTextDIS = Ntext.textContent.endsWith("Edited") ? Ntext.textContent.slice(0,-6):Ntext.textContent ;
+                UserDisplayInformation.PageSystem.CHANGE.Replay.VALUE = `${NST}~M${DDS}`;
+                UserDisplayInformation.PageSystem.CHANGE.Replay.REPLAYING = true;
+                    document.getElementById(`0${NST}`).style = ``;
+                const divEDTDIs = document.createElement("div");
+                    divEDTDIs.classList.add("Conts00");
+                    divEDTDIs.id = "DisplayTheEdit";
+                    const Nturn = document.createElement("edit-user");
+                Nturn.classList.add("ForWho");
+                    Nturn.textContent = 'You';
+                const TextEditP = document.createElement("text");
+                TextEditP.classList.add("nms");
+                const ButtonSX = document.createElement("button");
+                ButtonSX.id = 'ButtonSXRemove';
+                ButtonSX.classList.add("BTNS")
+                ButtonSX.textContent = '✕';
+                    ButtonSX.title = 'Close';
+                TextEditP.textContent = NTextDIS;
+                    dis.prepend(divEDTDIs);
+                    addHtml(divEDTDIs, Nturn);
+                    addHtml(divEDTDIs, TextEditP);
+                    addHtml(divEDTDIs, ButtonSX);
+                ButtonSX.addEventListener("click", function () {
+                    UserDisplayInformation.PageSystem.CHANGE.Replay.VALUE = '';
+                    UserDisplayInformation.PageSystem.CHANGE.Replay.REPLAYING = false;
+                    try {
+                        document.getElementById(`0${NST}`).style = ``;
+                    } catch (error) {
+                        console.warn("Deleted message Can't Be changed")
+                    }
+                    RHtml(dis, divEDTDIs);
+                    return;
+                })
+            })
+                })
+            })
+            GET_FORWARD_Button.forEach(forward => {
+                forward.addEventListener("click", function () {
+                
+            })
+        })
         GET_DELETE_Button.forEach(DEL => {
             DEL.addEventListener("click", function (e) {
                 const NST = DEL.getAttribute("JSK");
                 const Ntext = document.getElementById(NST);
                 const MN = document.getElementById(`0${NST}`);
                 const BN = DEL.getAttribute("CONT").trim();
+                MEssageForall.style.display = 'block';
                 try {
                     if (UserDisplayInformation.PageSystem.DEleteWithPermisioin == true) {
                         const p = confirm("Do you want to delte this Message");
@@ -93,6 +201,10 @@ document.addEventListener('DOMContentLoaded', () => {
                                 }
                                 delete Conversations[ CuruntClick ][ `M${BN}` ];
                                 MN.remove();
+                                ActionDisplay.textContent = 'Message was deleted';
+                                setTimeout(() => {
+                MEssageForall.style.display = 'none';
+                                }, 500);
                             }
                         }
                     }
@@ -103,6 +215,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         }
                         delete Conversations[ CuruntClick ][ `M${BN}` ];
                         MN.remove();
+                MEssageForall.style.display = 'none';
+
                     }
                     
                     
@@ -111,6 +225,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
         });
+
     }
     function checkAndAddSpaces(text, maxLength) {
         let result = '';
@@ -279,7 +394,13 @@ document.addEventListener('DOMContentLoaded', () => {
     an9s.id = 'suv';
     an89.spellcheck = true;
     an9s.src = '/chatGpt/gs.ogg'
-    addHtml(container, an9s)
+    addHtml(container, an9s);
+    const MEssageForall = document.createElement("div-mesage");
+    MEssageForall.classList.add("message-copy");
+    MEssageForall.style.display = 'none';
+    const ActionDisplay = document.createElement("span");
+    addHtml(container, MEssageForall);
+    addHtml(MEssageForall, ActionDisplay);
     an89.src = '/chatGpt/pleasant_keyboard_click_sound_50ms.wav'
     addHtml(container, section1);
     const ThreeDot = document.createElement("control-center");//add 
@@ -318,6 +439,15 @@ document.addEventListener('DOMContentLoaded', () => {
             ThreeDot.classList.add("hidden");
             But.textContent = '∭';
         }
+        document.addEventListener('click', (event) => {
+            if (!insideDivThree.contains(event.target) && event.target !== But) {
+                ntu = 0;
+                insideDivThree.hidden = true;
+                ThreeDot.classList.remove("three_dot");
+                ThreeDot.classList.add("hidden");
+                But.textContent = '∭';
+            }
+    });
     })
     const ConDiv = document.createElement("NTu-u");
     ConDiv.classList.add("condiv");
@@ -449,9 +579,11 @@ margin-right:20px;
         UserDisplayInformation.PageSystem.IsSelcting = true;
         FindDiv.style.display = 'none';
         DelteChange.style.display = '';
+        ARdiv.style.display = 'none';
         const checkboxes = document.querySelectorAll('.checkbox');
         checkboxes.forEach(checkbox => {
             checkbox.style.display = 'block';
+            
             checkbox.classList.add("IFHE");
             // checkbox.addEventListener("fullscreenerror")
             checkbox.addEventListener("change", function () {
@@ -485,6 +617,8 @@ margin-right:20px;
         DelteChange.style.display = 'none';
         FindDiv.style.display = '';
         creatp.textContent = ``;
+        (Account_ARchihved.innerHTML.trim() == '' ? ARdiv.style.display = 'none' : ARdiv.style.display = 'block')
+        // ARdiv.style.display = 'block';
         const checkboxes = document.querySelectorAll('.checkbox');
         checkboxes.forEach(checkbox => {
             checkbox.style.display = 'none';// Hide all checkboxes
@@ -508,9 +642,10 @@ margin-right:20px;
                     UserAccounts[Org].ARCH = true;
                 }
             })
+            ARdiv.style.display = 'block'; 
         }
         else {
-            ARCHIVESelected.textContent = 'Archive'
+            // ARCHIVESelected.textContent = 'Archive';
             checkboxes.forEach(checkbox => {
                 if (checkbox.checked) {
                     checkbox.parentElement.remove();
@@ -523,15 +658,20 @@ margin-right:20px;
                     UserAccounts[Org].ARCH = false;
                 }
             })
+            if (Account_ARchihved.innerHTML.trim() == '') { ARdiv.style.display = 'none'; }
         }
         CancelSelected.click();
     })
     DeleteSelected.addEventListener("click", function () {
         UserDisplayInformation.PageSystem.IsSelcting = false;
         const checkboxes = document.querySelectorAll('.checkbox');
+        let co = 0;
+
         checkboxes.forEach(checkbox => {
+            MEssageForall.style.display = 'block';
             DeleteSelected.textContent = `Delete`;
             if (checkbox.checked) {
+                co++;
                 checkbox.parentElement.remove();
                 const n22 = checkbox.value;
                 const n33nest = checkbox.getAttribute("getme");
@@ -551,12 +691,16 @@ margin-right:20px;
                     // messageDisplay.innerHTML = '';
                     if (accountS.innerHTML.trim() == '') { addHtml(accountS, main01) }
                 }
-                if(Account_ARchihved.innerHTML.trim() == ''){ARdiv.remove()}
+                if (Account_ARchihved.innerHTML.trim() == '') { ARdiv.style.display = 'none' }
+                ActionDisplay.textContent = `${co} Accounts was deleted`
             }
+            setTimeout(() => {
+                MEssageForall.style.display = 'none';
+            }, 800);
         });
         CancelSelected.click();
     })
-    const accountS = document.createElement("div")
+    const accountS = document.createElement("Accounts")
     accountS.classList.add("ACCAll");
     accountS.id = 'accountS'
     const main01 = document.createElement("div");
@@ -567,7 +711,7 @@ margin-right:20px;
     const main03 = document.createElement("text");
     main03.classList.add("Dis_text")
     main03.textContent = `There is no Accounts Yet!`
-    const SerAccount = document.createElement("div");
+    const SerAccount = document.createElement("Serch-result");
     SerAccount.classList.add("t");
     SerAccount.hidden = true;
     const ArchivedAccounts = document.createElement('archived-acc');
@@ -583,7 +727,7 @@ margin-right:20px;
     const Account_ARchihved = document.createElement("b-tools");
     Account_ARchihved.classList.add('ACCAll');
     //
-    const ARdiv = document.createElement("arc-di-v");
+    const ARdiv = document.createElement("show-Archived");
     ARdiv.classList.add("MainDiv");
     const arSpan = document.createElement("n-animation");
     arSpan.classList.add("IMGf4");
@@ -596,6 +740,7 @@ margin-right:20px;
         accountS.style.display = 'block';
         ArchivedAccounts.style.display = 'none';
         ArchivedAccounts.hidden = true;
+        ARCHIVESelected.textContent = 'Archive'
         accountS.hidden = false;
         IsHeInArchive = false;
     })
@@ -719,6 +864,9 @@ margin-right:20px;
             ArchivedAccounts.hidden = true;
             accountS.hidden = false;
             IsHeInArchive = false;
+            ARCHIVESelected.textContent = 'Archive';
+            if (Account_ARchihved.innerHTML.trim() == '') { ARdiv.style.display = 'none'; }
+            else {ARdiv.style.display = 'block'; }
             return;
         }
         s1tos3()
@@ -864,6 +1012,9 @@ margin-right:20px;
                 const reader = new FileReader();
                 reader.onload = function (e) {
                     const dataUrl = e.target.result;
+                    if (dataUrl.startsWith("data:image/")) {
+                        console.log('run')
+                    }
                     cont_Span.innerHTML = `<img src="${dataUrl}" alt="Selected Image" style="max-width: 100%; max-height: 100%;">`;
                 }
                 reader.readAsDataURL(SelctImage1);
@@ -1016,7 +1167,7 @@ margin-right:20px;
             if (InputR1) {
                 if (InputR1.checked) {
                     UserDisplayInformation.PageStyle.GreenBLue == true;
-                    PageNature.href = './style/n.css';
+                    PageNature.href = 'n.css';
                 }
                 else {
                     UserDisplayInformation.PageStyle.GreenBLue == false;
@@ -1076,7 +1227,7 @@ margin-right:20px;
             Button.addEventListener("click", function () {
                 const PageNature = document.getElementById("PageNature")
                 if (InputR1.checked) {
-                    PageNature.href = './style/n.css';
+                    PageNature.href = 'n.css';
                     UserDisplayInformation.PageStyle.GreenBLue = true;
                     UserDisplayInformation.PageStyle.BlueViolet = false;
                 }
@@ -1128,7 +1279,7 @@ margin-right:20px;
     searchInput.addEventListener("input", function () {
         if (IsHeInArchive == true) {
             adubutton.click();   
-            ArchivedAccounts.style.hidden = true;
+            ArchivedAccounts.style.display = 'none';
         }
         const query = searchInput.value.toLowerCase();
         const filteredStores = FNAME.filter(store => store.toLowerCase().startsWith(query));
@@ -1136,9 +1287,11 @@ margin-right:20px;
             accountS.classList.remove("t")
             accountS.classList.add("ACCAll");
             SerAccount.classList.remove("ACCAll");
-            SerAccount.classList.add("t")
+            SerAccount.classList.add("t");
             SerAccount.hidden = true;
             accountS.hidden = false;
+            accountS.style.display = ''
+            SerAccount.style.display = 'none'
         }
         else {
             updateDisplay(filteredStores);
@@ -1148,10 +1301,12 @@ margin-right:20px;
             if (results.length > 0) {
                 SerAccount.hidden = false;
                 accountS.hidden = true;
+                SerAccount.style.display = '';
+                accountS.style.display = 'none'
                 accountS.classList.remove("ACCAll")
                 SerAccount.classList.remove("t")
                 SerAccount.classList.add("ACCAll")
-                accountS.classList.add("t")
+                accountS.classList.add("t");
                 results.forEach(item => {
                     const div = document.createElement('div');
                     div.classList.add("oneAccount");
@@ -1219,8 +1374,8 @@ margin-right:20px;
             if (confirm("do you want to delte this account that doesn't exist")) {
                 try {
                     const Org = ReverseAccounts[ gnet ].nest;
-                    delete UserAccounts[ Org ]
-                    delete Conversations[ Org ]
+                    delete UserAccounts[ Org ];
+                    delete Conversations[ Org ];
                 } catch (error) {
                     alert("some thing bad happen: We must restart the page");
                     setTimeout(() => {
@@ -1289,26 +1444,84 @@ margin-right:20px;
                         nd.setAttribute('iid', iid);
                         nd.id = message.IDS;
                         nd.classList.add(message.FOR)
+                        const REplayTExt = document.createElement("replayed");
+                        REplayTExt.classList.add("replayedtext");
+                        const Whoreplay = document.createElement("span");
+                        const replayValue = document.createElement("text");
+                        replayValue.classList.add("text-repaly");
+                        const Control_Show = document.createElement("Control-text");
+                        Control_Show.classList.add("Show_Control");
+                        const SowCND = document.createElement("sow-cnd");
+                        SowCND.classList.add("SignBes");
+                        const Symbol_Plus = document.createElement('Symb-p');
+                        Symbol_Plus.textContent = '+';
+                        Symbol_Plus.classList.add("symboleplus1");
+                        Symbol_Plus.id = 'SHown99';
                         nd.innerHTML = message.EDITED ? `${message.VALUE} <span class="MNEDITED">Edited<span>` : message.VALUE;
                         const CNDLIV = document.createElement("div");
                         CNDLIV.classList.add("ControlCeterFM")
                         const COOT_DEL = document.createElement("button");
                         const COOT_Edit = document.createElement("button");
+                        const COOT_Copy = document.createElement("button");
+                        const COOT_Replay = document.createElement("button");
+                        const COOT_forward = document.createElement("button");
+                        COOT_DEL.id = "FM_DELETE";
+                        COOT_Copy.id = "FM_COPY";
+                        COOT_Replay.id = "FM_REPLAY";
+                        COOT_forward.id = "FM_FORWARD";
                         COOT_DEL.id = "FM_DELETE";
                         COOT_Edit.id = "FM_EDIT";
-                        COOT_DEL.classList.add("FM_DEL");
-                        COOT_DEL.setAttribute("JSK", message.IDS);
-                        COOT_Edit.setAttribute("JSK", message.IDS);
+                        COOT_Copy.classList.add("FM_COPY");
+                        COOT_Replay.classList.add("FM_REPLAY");
+                        COOT_forward.classList.add("FM_FORWARD");
                         COOT_Edit.classList.add("FM_Edit");
-                        COOT_DEL.textContent = '✕'
-                        COOT_Edit.textContent = '⇲'
+                        COOT_DEL.classList.add("FM_DEL");
+                        COOT_Edit.title = "edit the text";
+                        COOT_Replay.title = "Replay for this text";
+                        COOT_forward.title = "Forward this text for";
+                        COOT_DEL.title = "delete the text";
+                        COOT_Copy.title = "copy the text";
+                        COOT_DEL.setAttribute("JSK", message.IDS);
+                        COOT_forward.setAttribute("JSK",message.IDS)
+                        COOT_Replay.setAttribute("JSK",message.IDS)
+                        COOT_Copy.setAttribute("JSK", message.IDS);
+                        COOT_Edit.setAttribute("JSK", message.IDS);
+                        COOT_Copy.textContent = '⩸';
+                        COOT_DEL.textContent = '✕';
+                        COOT_Edit.textContent = '⇲';
+                        COOT_forward.textContent = '↪';
+                        COOT_Replay.textContent = '↩';
                         COOT_DEL.setAttribute("CONT", `${message.Couns}`);
+                        COOT_Copy.setAttribute("CONT", `${message.Couns}`);
                         COOT_Edit.setAttribute("CONT", `${message.Couns}`);
+                        COOT_Replay.setAttribute("CONT", `${message.Couns}`);
+                        COOT_forward.setAttribute("CONT", `${message.Couns}`);
+                          CNDLIV.id = `@~${message.IDS}~@`;
+                Symbol_Plus.setAttribute("FWO",message.IDS);
                         addHtml(messageDisplay, DSV)
+                        if (message.ISREPLAYING) {
+                            const ch = message.REPlayWIHT;
+                            const ch1 = ch.split('~');
+                            REplayTExt.id = "GOTO-REP-MESSAGE";
+                            REplayTExt.setAttribute("GETID",ch1[0])
+                            REplayTExt.setAttribute("GETPLACE",ch1[1])
+                            DSV.prepend(REplayTExt);
+                            Whoreplay.textContent = "You"
+                            addHtml(REplayTExt, Whoreplay);
+                            const NTV = Conversations[ CuruntClick ][ ch1[ 0 ] ].VALUE;
+                            replayValue.textContent = (NTV.length > 15 ? `${NTV.slice(1, 15)}...` : NTV);
+                            addHtml(REplayTExt, replayValue);
+                        }
                         addHtml(DSV, nd)
-                        addHtml(DSV, CNDLIV)
-                        addHtml(CNDLIV, COOT_DEL)
-                        addHtml(CNDLIV, COOT_Edit)
+                addHtml(DSV, Control_Show);
+                addHtml(Control_Show, SowCND);
+                addHtml(SowCND, Symbol_Plus);
+                addHtml(Control_Show, CNDLIV);
+                addHtml(CNDLIV, COOT_Copy);
+                addHtml(CNDLIV, COOT_DEL);
+                addHtml(CNDLIV, COOT_Edit);
+                addHtml(CNDLIV, COOT_Replay);
+                addHtml(CNDLIV, COOT_forward);
                     }
                 }
                 else {
@@ -1414,7 +1627,7 @@ margin-right:20px;
         let audioChunks = [];
         RecordingButton.addEventListener("click", async () => {
             try {
-                if (UserDisplayInformation.PageSystem.CHANGE.ISEDITING == true)  return 
+                if (UserDisplayInformation.PageSystem.CHANGE.ISEDITING == true) return;
             zxv++;
             let vs;
             let vst = false
@@ -1512,7 +1725,8 @@ margin-right:20px;
                 mediaRecorder.stop();
             }
             } catch (error) {
-                console.error("Cant Make recording Because = ", error)
+                alert("Cant Make recording Because = "+ error)
+                console.log(error)
             }
         })
     }
@@ -1528,10 +1742,24 @@ margin-right:20px;
 
     // Function to send message
     function sendMessage() {
-
+        let known;
+        let elegebelity = false;
         const message1 = messageInput.value.trim();
         const formatted = checkAndAddSpaces(message1, 20);
         const message = formatted;
+        if (UserDisplayInformation.PageSystem.CHANGE.Replay.REPLAYING == true) {
+            try {
+                if (message == '') return;
+                const WAY = UserDisplayInformation.PageSystem.CHANGE.Replay.VALUE;
+                elegebelity = true;
+                known = WAY.split('~');
+                console.log(elegebelity);
+            } catch (error) {
+                elegebelity = false;
+                document.location.reload();
+            }
+        }
+        //endfocus
         if (UserDisplayInformation.PageSystem.CHANGE.ISEDITING == true) {
             try {
                 if (message == '') return;
@@ -1577,26 +1805,59 @@ margin-right:20px;
             const aDiv = document.createElement("div");
             const BDiv = document.createElement("div");
             BDiv.classList.add("main012")
-            BDiv.id = `0${bas}`
+            BDiv.id = `0${bas}`;
+            const REplayTExt = document.createElement("replayed");
+            REplayTExt.classList.add("replayedtext");
+            const Whoreplay = document.createElement("span");
+            const replayValue = document.createElement("text");
+            replayValue.classList.add("text-repaly");
             const userMessageDiv = document.createElement('div');
             userMessageDiv.id = bas;
             userMessageDiv.setAttribute('m_get_with_N', bas);
             Account_textes[ bas2 ].push(bas)
             userMessageDiv.classList.add('UserMessage');
             userMessageDiv.textContent = message;
+            const Control_Show = document.createElement("Control-text");
+            Control_Show.classList.add("Show_Control");
+            const SowCND = document.createElement("sow-cnd");
+            SowCND.classList.add("SignBes");
+            const Symbol_Plus = document.createElement('Symb-p');
+            Symbol_Plus.textContent = '+';
+            Symbol_Plus.classList.add("symboleplus1")
+            Symbol_Plus.id = 'SHown99'
             const CNDLIV = document.createElement("div");
-            CNDLIV.classList.add("ControlCeterFM")
+            CNDLIV.classList.add("ControlCeterFM");
+            CNDLIV.style.display = 'none';
             const COOT_DEL = document.createElement("button");
-
             const COOT_Edit = document.createElement("button");
+            const COOT_Replay = document.createElement("button");
+            const COOT_forward = document.createElement("button");
+            const COOT_Copy = document.createElement("button");
+            COOT_Copy.id = "FM_COPY";
+            COOT_Replay.id = "FM_REPLAY";
+            COOT_forward.id = "FM_FORWARD";
             COOT_DEL.id = "FM_DELETE";
             COOT_Edit.id = "FM_EDIT";
-            COOT_DEL.classList.add("FM_DEL");
-            COOT_DEL.setAttribute("JSK", bas);
-            COOT_Edit.setAttribute("JSK", bas);
+            COOT_Copy.classList.add("FM_COPY");
+            COOT_Replay.classList.add("FM_REPLAY");
+            COOT_forward.classList.add("FM_FORWARD");
             COOT_Edit.classList.add("FM_Edit");
-            COOT_DEL.textContent = '✕'
-            COOT_Edit.textContent = '⇲'
+            COOT_DEL.classList.add("FM_DEL");
+            COOT_Edit.title = "edit the text";
+            COOT_Replay.title = "Replay for this text";
+            COOT_forward.title = "Forward this text for";
+            COOT_DEL.title = "delete the text";
+            COOT_Copy.title = "copy the text";
+            COOT_DEL.setAttribute("JSK", bas);
+            COOT_forward.setAttribute("JSK",bas)
+            COOT_Replay.setAttribute("JSK",bas)
+            COOT_Copy.setAttribute("JSK", bas);
+            COOT_Edit.setAttribute("JSK", bas);
+            COOT_Copy.textContent = '⩸';
+            COOT_DEL.textContent = '✕';
+            COOT_Edit.textContent = '⇲';
+            COOT_forward.textContent = '↪';
+            COOT_Replay.textContent = '↩';
             // userMessageDiv.style.backgroundColor = mess_collor;
             if (IsAnswering == true) {
                 return;
@@ -1604,14 +1865,34 @@ margin-right:20px;
             else {
                 ConverCount[ c ].ML++;
                 COOT_DEL.setAttribute("CONT", `${ConverCount[ c ].ML}`);
+                COOT_Copy.setAttribute("CONT", `${ConverCount[c].ML}`);
                 COOT_Edit.setAttribute("CONT", `${ConverCount[ c ].ML}`);
-                addHtml(messageDisplay, aDiv)
-                addHtml(aDiv, BDiv)
+                COOT_Replay.setAttribute("CONT", `${ConverCount[ c ].ML}`);
+                COOT_forward.setAttribute("CONT", `${ConverCount[ c ].ML}`);
+                CNDLIV.id = `@~${bas}~@`;
+                Symbol_Plus.setAttribute("FWO",bas);
+                addHtml(messageDisplay, aDiv);
+                addHtml(aDiv, BDiv);
+                if (elegebelity == true) {
+                    Whoreplay.textContent = 'You';
+                    let check = Conversations[CuruntClick][known[ 1 ]].VALUE;
+                    replayValue.textContent = (check.length > 15 ? `${check.slice(1, 15)}...` : check);
+                    BDiv.prepend(REplayTExt);
+                    addHtml(REplayTExt, Whoreplay);
+                    addHtml(REplayTExt, replayValue);
+                }
+                
                 addHtml(BDiv, userMessageDiv);
-                addHtml(BDiv, CNDLIV);
+                addHtml(BDiv, Control_Show);
+                addHtml(Control_Show, SowCND);
+                addHtml(SowCND, Symbol_Plus);
+                addHtml(Control_Show, CNDLIV);
+                addHtml(CNDLIV, COOT_Copy);
                 addHtml(CNDLIV, COOT_DEL);
                 addHtml(CNDLIV, COOT_Edit);
-                Conversations[ c ][ `M${ConverCount[ c ].ML}` ] = { EDITED: false, ISAUDIO: false, VALUE: formatted, FOR: "UserMessage", IDS: bas, Couns: ConverCount[ c ].ML }
+                addHtml(CNDLIV, COOT_Replay);
+                addHtml(CNDLIV, COOT_forward);
+                Conversations[ c ][ `M${ConverCount[ c ].ML}` ] = {ISREPLAYING:(elegebelity? true: false),REPlayWIHT:(elegebelity? `${ `${known[1]}` }~0${bas}`:''), EDITED: false, ISAUDIO: false, VALUE: formatted, FOR: "UserMessage", IDS: bas, Couns: ConverCount[ c ].ML }
                 messageInput.value = '';
                 DLE_Buttons();
             }
